@@ -1,4 +1,7 @@
 // TODO
 <!-- [ ] adicionar funções (FUNC TYPE ): -->
-[ ] adicionar funções (FUNC TYPE ):
-    * [ ] adicionar funções
+[ ] adicionar funções (FUNC TYPE IDENT  (VAR LIST) BLOCO_VARIAVEIS_LOCAIS BLOCO_CMD):
+    * [ ] adicionar FUNC
+        * [ ] criar TFunc (no .y)
+        * [ ] reconhecer FUNC no .lex
+    * [ ] adicionar FUNC
