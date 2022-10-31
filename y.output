@@ -1,0 +1,585 @@
+   0  $accept : prog $end
+
+   1  $$1 :
+
+   2  prog : $$1 dList main
+
+   3  dList : decl dList
+   4        |
+
+   5  $$2 :
+
+   6  decl : type $$2 TArray Lid ';'
+
+   7  Lid : Lid ',' id
+   8      | id
+
+   9  id : IDENT
+
+  10  $$3 :
+
+  11  TArray : '[' NUM ']' $$3 TArray
+  12         |
+
+  13  type : INT
+  14       | DOUBLE
+  15       | BOOL
+
+  16  main : VOID MAIN '(' ')' bloco
+
+  17  bloco : '{' listacmd '}'
+
+  18  listacmd : listacmd cmd
+  19           |
+
+  20  cmd : exp ';'
+  21      | IF '(' exp ')' cmd
+
+  22  exp : exp '+' exp
+  23      | exp '>' exp
+  24      | exp AND exp
+  25      | NUM
+  26      | '(' exp ')'
+  27      | IDENT
+  28      | exp '=' exp
+  29      | exp '[' exp ']'
+
+state 0
+	$accept : . prog $end  (0)
+	$$1 : .  (1)
+
+	.  reduce 1
+
+	prog  goto 1
+	$$1  goto 2
+
+
+state 1
+	$accept : prog . $end  (0)
+
+	$end  accept
+
+
+state 2
+	prog : $$1 . dList main  (2)
+	dList : .  (4)
+
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	VOID  reduce 4
+
+	type  goto 6
+	dList  goto 7
+	decl  goto 8
+
+
+state 3
+	type : INT .  (13)
+
+	.  reduce 13
+
+
+state 4
+	type : DOUBLE .  (14)
+
+	.  reduce 14
+
+
+state 5
+	type : BOOL .  (15)
+
+	.  reduce 15
+
+
+state 6
+	decl : type . $$2 TArray Lid ';'  (6)
+	$$2 : .  (5)
+
+	.  reduce 5
+
+	$$2  goto 9
+
+
+state 7
+	prog : $$1 dList . main  (2)
+
+	VOID  shift 10
+	.  error
+
+	main  goto 11
+
+
+state 8
+	dList : decl . dList  (3)
+	dList : .  (4)
+
+	INT  shift 3
+	DOUBLE  shift 4
+	BOOL  shift 5
+	VOID  reduce 4
+
+	type  goto 6
+	dList  goto 12
+	decl  goto 8
+
+
+state 9
+	decl : type $$2 . TArray Lid ';'  (6)
+	TArray : .  (12)
+
+	'['  shift 13
+	IDENT  reduce 12
+
+	TArray  goto 14
+
+
+state 10
+	main : VOID . MAIN '(' ')' bloco  (16)
+
+	MAIN  shift 15
+	.  error
+
+
+state 11
+	prog : $$1 dList main .  (2)
+
+	.  reduce 2
+
+
+state 12
+	dList : decl dList .  (3)
+
+	.  reduce 3
+
+
+state 13
+	TArray : '[' . NUM ']' $$3 TArray  (11)
+
+	NUM  shift 16
+	.  error
+
+
+state 14
+	decl : type $$2 TArray . Lid ';'  (6)
+
+	IDENT  shift 17
+	.  error
+
+	Lid  goto 18
+	id  goto 19
+
+
+state 15
+	main : VOID MAIN . '(' ')' bloco  (16)
+
+	'('  shift 20
+	.  error
+
+
+state 16
+	TArray : '[' NUM . ']' $$3 TArray  (11)
+
+	']'  shift 21
+	.  error
+
+
+state 17
+	id : IDENT .  (9)
+
+	.  reduce 9
+
+
+state 18
+	decl : type $$2 TArray Lid . ';'  (6)
+	Lid : Lid . ',' id  (7)
+
+	';'  shift 22
+	','  shift 23
+	.  error
+
+
+state 19
+	Lid : id .  (8)
+
+	.  reduce 8
+
+
+state 20
+	main : VOID MAIN '(' . ')' bloco  (16)
+
+	')'  shift 24
+	.  error
+
+
+state 21
+	TArray : '[' NUM ']' . $$3 TArray  (11)
+	$$3 : .  (10)
+
+	.  reduce 10
+
+	$$3  goto 25
+
+
+state 22
+	decl : type $$2 TArray Lid ';' .  (6)
+
+	.  reduce 6
+
+
+state 23
+	Lid : Lid ',' . id  (7)
+
+	IDENT  shift 17
+	.  error
+
+	id  goto 26
+
+
+state 24
+	main : VOID MAIN '(' ')' . bloco  (16)
+
+	'{'  shift 27
+	.  error
+
+	bloco  goto 28
+
+
+state 25
+	TArray : '[' NUM ']' $$3 . TArray  (11)
+	TArray : .  (12)
+
+	'['  shift 13
+	IDENT  reduce 12
+
+	TArray  goto 29
+
+
+state 26
+	Lid : Lid ',' id .  (7)
+
+	.  reduce 7
+
+
+state 27
+	bloco : '{' . listacmd '}'  (17)
+	listacmd : .  (19)
+
+	.  reduce 19
+
+	listacmd  goto 30
+
+
+state 28
+	main : VOID MAIN '(' ')' bloco .  (16)
+
+	.  reduce 16
+
+
+state 29
+	TArray : '[' NUM ']' $$3 TArray .  (11)
+
+	.  reduce 11
+
+
+state 30
+	bloco : '{' listacmd . '}'  (17)
+	listacmd : listacmd . cmd  (18)
+
+	IDENT  shift 31
+	NUM  shift 32
+	IF  shift 33
+	'('  shift 34
+	'}'  shift 35
+	.  error
+
+	exp  goto 36
+	cmd  goto 37
+
+
+state 31
+	exp : IDENT .  (27)
+
+	.  reduce 27
+
+
+state 32
+	exp : NUM .  (25)
+
+	.  reduce 25
+
+
+state 33
+	cmd : IF . '(' exp ')' cmd  (21)
+
+	'('  shift 38
+	.  error
+
+
+state 34
+	exp : '(' . exp ')'  (26)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 39
+
+
+state 35
+	bloco : '{' listacmd '}' .  (17)
+
+	.  reduce 17
+
+
+state 36
+	cmd : exp . ';'  (20)
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'='  shift 41
+	'>'  shift 42
+	'+'  shift 43
+	'['  shift 44
+	';'  shift 45
+	.  error
+
+
+state 37
+	listacmd : listacmd cmd .  (18)
+
+	.  reduce 18
+
+
+state 38
+	cmd : IF '(' . exp ')' cmd  (21)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 46
+
+
+state 39
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : '(' exp . ')'  (26)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'='  shift 41
+	'>'  shift 42
+	'+'  shift 43
+	'['  shift 44
+	')'  shift 47
+	.  error
+
+
+state 40
+	exp : exp AND . exp  (24)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 48
+
+
+state 41
+	exp : exp '=' . exp  (28)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 49
+
+
+state 42
+	exp : exp '>' . exp  (23)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 50
+
+
+state 43
+	exp : exp '+' . exp  (22)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 51
+
+
+state 44
+	exp : exp '[' . exp ']'  (29)
+
+	IDENT  shift 31
+	NUM  shift 32
+	'('  shift 34
+	.  error
+
+	exp  goto 52
+
+
+state 45
+	cmd : exp ';' .  (20)
+
+	.  reduce 20
+
+
+state 46
+	cmd : IF '(' exp . ')' cmd  (21)
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'='  shift 41
+	'>'  shift 42
+	'+'  shift 43
+	'['  shift 44
+	')'  shift 53
+	.  error
+
+
+state 47
+	exp : '(' exp ')' .  (26)
+
+	.  reduce 26
+
+
+state 48
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp AND exp .  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	'['  shift 44
+	AND  reduce 24
+	'='  reduce 24
+	'>'  reduce 24
+	'+'  reduce 24
+	';'  reduce 24
+	']'  reduce 24
+	')'  reduce 24
+
+
+state 49
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp '=' exp .  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'='  shift 41
+	'>'  shift 42
+	'+'  shift 43
+	'['  shift 44
+	';'  reduce 28
+	']'  reduce 28
+	')'  reduce 28
+
+
+state 50
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp '>' exp .  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'+'  shift 43
+	'['  shift 44
+	'='  reduce 23
+	';'  reduce 23
+	']'  reduce 23
+	')'  reduce 23
+
+
+state 51
+	exp : exp . '+' exp  (22)
+	exp : exp '+' exp .  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+
+	AND  shift 40
+	'['  shift 44
+	'='  reduce 22
+	'>'  reduce 22
+	'+'  reduce 22
+	';'  reduce 22
+	']'  reduce 22
+	')'  reduce 22
+
+
+state 52
+	exp : exp . '+' exp  (22)
+	exp : exp . '>' exp  (23)
+	exp : exp . AND exp  (24)
+	exp : exp . '=' exp  (28)
+	exp : exp . '[' exp ']'  (29)
+	exp : exp '[' exp . ']'  (29)
+
+	AND  shift 40
+	'='  shift 41
+	'>'  shift 42
+	'+'  shift 43
+	'['  shift 44
+	']'  shift 54
+	.  error
+
+
+state 53
+	cmd : IF '(' exp ')' . cmd  (21)
+
+	IDENT  shift 31
+	NUM  shift 32
+	IF  shift 33
+	'('  shift 34
+	.  error
+
+	exp  goto 36
+	cmd  goto 55
+
+
+state 54
+	exp : exp '[' exp ']' .  (29)
+
+	.  reduce 29
+
+
+state 55
+	cmd : IF '(' exp ')' cmd .  (21)
+
+	.  reduce 21
+
+
+25 terminals, 16 nonterminals
+30 grammar rules, 56 states

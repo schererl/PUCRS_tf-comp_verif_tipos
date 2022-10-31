@@ -1,0 +1,14 @@
+1. gerar o léxico  (gera Yylex.java ou arquivo especificado no %class)
+> jflex <arq.flex>   OU
+> java -jar JFlex.jar <arq.flex>
+
+2. gerar o sintático  (gera Parser.java)
+> byaccj -tv -J <arq.y>     OU
+> ./yacc.llinux -tv -J <arq.y>
+
+3. compilar código java
+> javac Parser.java
+
+4. testar:
+>  java Parser    OU
+> java Parser <teste.txt>
