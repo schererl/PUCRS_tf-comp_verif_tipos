@@ -12,6 +12,7 @@ public class TS_entry
    private TS_entry tipo;
    private int nroElementos;
    private TS_entry tipoBase;
+   private TabSimb lstArgumentos;
 
 
    // construtor para arrays

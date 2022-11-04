@@ -32,6 +32,10 @@ public class TabSimb
       return null;
     }
 
+    public void clear(){
+      this.lista.clear();
+    }
+
     public  ArrayList<TS_entry> getLista() {return lista;}
 }
 

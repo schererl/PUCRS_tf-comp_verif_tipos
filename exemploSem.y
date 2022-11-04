@@ -23,6 +23,14 @@
 
 prog : { currClass = ClasseID.VarGlobal; } dList main ;
 
+ListaFunc : TFunc {tsLocal.clear();} ListaFunc
+               |                
+;      
+
+TFunc : FUNCT tipo IDENT '('')' dList Bloco
+      | FUNCT tipo IDENT '(' ListaParametros ')' dList Bloco 
+;
+
 dList : decl dList | ;
 
 decl : type  {currentType = (TS_entry)$1; } 
@@ -38,10 +46,14 @@ Lid : Lid  ',' id
     | id  
     ;
 
-id : IDENT   { TS_entry nodo = ts.pesquisa($1);
+id : IDENT   { TS_entry nodo = (currClass == ClasseID.VarLocal) ? tsLocal.pesquisa($1) : ts.pesquisa($1);
                             if (nodo != null) 
                               yyerror("(sem) variavel >" + $1 + "< jah declarada");
-                          else ts.insert(new TS_entry($1, currentType, currClass)); 
+                          else{
+                            (currClass == ClasseID.VarLocal) ? 
+                              tsLocal.insert(new TS_entry($1, currentType, currClass)) :
+                              ts.insert(new TS_entry($1, currentType, currClass));
+                          } 
                        }
     
     ;
@@ -83,7 +95,14 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     | exp AND exp { $$ = validaTipo(AND, (TS_entry)$1, (TS_entry)$3); } 
     | NUM         { $$ = Tp_INT; }      
     | '(' exp ')' { $$ = $2; }
-    | IDENT       { TS_entry nodo = ts.pesquisa($1);
+    | IDENT       { 
+                    TS_entry nodo; 
+                    if(currClass == ClasseID.VarLocal)
+                      nodo = tsLocal.pesquisa($1);
+
+                    if(nodo == null)
+                      nodo = ts.pesquisa($1);
+
                     if (nodo == null) {
                        yyerror("(sem) var <" + $1 + "> nao declarada"); 
                        $$ = Tp_ERRO;    
@@ -107,6 +126,8 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
   private Yylex lexer;
 
   private TabSimb ts;
+  private TabSimb tf;
+  private TabSimb tsLocal;
 
   public static TS_entry Tp_INT =  new TS_entry("int", null, ClasseID.TipoBase);
   public static TS_entry Tp_DOUBLE = new TS_entry("double", null,  ClasseID.TipoBase);
