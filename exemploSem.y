@@ -5,7 +5,7 @@
 
 
 %token IDENT, INT, DOUBLE, BOOL, NUM, STRING
-%token LITERAL, AND, VOID, MAIN, IF
+%token LITERAL, AND, VOID, MAIN, IF, FUNCT
 %token STRUCT
 
 %right '='
@@ -23,13 +23,19 @@
 
 prog : { currClass = ClasseID.VarGlobal; } dList main ;
 
-ListaFunc : TFunc {tsLocal.clear();} ListaFunc
+ListaFunc : dFunc {tsLocal.clear();} ListaFunc
                |                
 ;      
 
-TFunc : FUNCT tipo IDENT '('')' dList Bloco
-      | FUNCT tipo IDENT '(' ListaParametros ')' dList Bloco 
+dFunc : FUNCT type IDENT '('')' dList bloco
+      | FUNCT type IDENT '(' paramList ')' dList bloco 
 ;
+
+param : type IDENT;
+
+paramList : paramList ',' param 
+          | paramList
+          ;
 
 dList : decl dList | ;
 
@@ -50,8 +56,9 @@ id : IDENT   { TS_entry nodo = (currClass == ClasseID.VarLocal) ? tsLocal.pesqui
                             if (nodo != null) 
                               yyerror("(sem) variavel >" + $1 + "< jah declarada");
                           else{
-                            (currClass == ClasseID.VarLocal) ? 
-                              tsLocal.insert(new TS_entry($1, currentType, currClass)) :
+                            if (currClass == ClasseID.VarLocal)
+                              tsLocal.insert(new TS_entry($1, currentType, currClass));
+                            else
                               ts.insert(new TS_entry($1, currentType, currClass));
                           } 
                        }
@@ -96,7 +103,8 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     | NUM         { $$ = Tp_INT; }      
     | '(' exp ')' { $$ = $2; }
     | IDENT       { 
-                    TS_entry nodo; 
+                    TS_entry nodo = null;
+
                     if(currClass == ClasseID.VarLocal)
                       nodo = tsLocal.pesquisa($1);
 
@@ -119,7 +127,41 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                                else 
                                   $$ = ((TS_entry)$1).getTipoBase();
                          } 
+     | IDENT '('')' {//verifica na tabela de func com 0 args
+                    TS_entry func = tf.pesquisa($1);
+
+                    if(func == null){
+                      yyerror("(sem) funct <" + $1 + "> nao declarada"); 
+                      $$ = Tp_ERRO;
+                    }
+                    else if(func.lstArgumentos.getLista().size() != 0){
+                      yyerror("(sem) funct <" + $1 + "> espera 0 argumentos mas recebeu " + func.lstArgumentos.getLista().size()); 
+                      $$ = Tp_ERRO;
+                    }
+                    else{
+                      $$ = (TS_entry)$1).getTipoBase();
+                    }
+
+                    
+                    }
+     | IDENT '(' LExp ')' {//verifica na tabela de func n parametros e tipos compativeis
+     
+                          if(func == null){
+                            yyerror("(sem) funct <" + $1 + "> nao declarada"); 
+                            $$ = Tp_ERRO;
+                          }
+                          else if(func.lstArgumentos.getLista().size() != 0){
+                            yyerror("(sem) funct <" + $1 + "> espera 0 argumentos mas recebeu " + func.lstArgumentos.getLista().size()); 
+                            $$ = Tp_ERRO;
+                          }
+                          
+                          }
     ;
+
+
+LExp: LExp ',' Exp
+      | Exp
+      ;
 
 %%
 

@@ -47,6 +47,7 @@ NL  = \n|\r|\r\n
 {NUM}  { yyparser.yylval = new ParserVal(Integer.parseInt(yytext())); 
          return Parser.NUM; }
 
+funct    { return Parser.FUNCT;     }
 int    { return Parser.INT;     }
 double  { return Parser.DOUBLE;   }
 bool   { return Parser.BOOL; }
