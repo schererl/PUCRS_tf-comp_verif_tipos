@@ -1,7 +1,12 @@
 // TODO
-<!-- [ ] adicionar funções (FUNC TYPE ): -->
-[ ] adicionar funções (FUNC TYPE IDENT  (VAR LIST) BLOCO_VARIAVEIS_LOCAIS BLOCO_CMD):
-    * [ ] adicionar FUNC
-        * [ ] criar TFunc (no .y)
-        * [ ] reconhecer FUNC no .lex
-    * [ ] adicionar FUNC
+
+[ ] adicionar funções:
+    * [x] adicionar funções
+    * [] instânciar variáveis de escopo
+    * [] adicionar cláusula return
+    * [] armazenar resultado da função numa variável
+[ ] verificação de erros:
+    * [x] há repetição de identificadores de argumentos na função
+    * [x] o número de argumentos na chamada de função é igual ao número de argumentos na declaração de função
+    * [ ] os tipos dos argumentos são os mesmos em ordem dos tipos dos argumentos na declaração de função
+    * [x] se é possível passar como argumento uma variável de mesmo identificador que o identificador na declaração de função

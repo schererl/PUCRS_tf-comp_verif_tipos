@@ -27,6 +27,7 @@ NL  = \n|\r|\r\n
 "$TRACE_ON"  { yyparser.setDebug(true);  }
 "$TRACE_OFF" { yyparser.setDebug(false); }
 "$MOSTRA_TS" { yyparser.listarTS(); }
+"$MOSTRA_TF" { yyparser.listarTF(); }
 
 
 /* operators */
@@ -47,7 +48,7 @@ NL  = \n|\r|\r\n
 {NUM}  { yyparser.yylval = new ParserVal(Integer.parseInt(yytext())); 
          return Parser.NUM; }
 
-funct    { return Parser.FUNCT;     }
+funct  { return Parser.FUNCT; }
 int    { return Parser.INT;     }
 double  { return Parser.DOUBLE;   }
 bool   { return Parser.BOOL; }

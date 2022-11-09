@@ -1,6 +1,7 @@
     
 %{
   import java.io.*;
+  import java.util.ArrayList;
 %}
 
 
@@ -21,22 +22,34 @@
 
 %%
 
-prog : { currClass = ClasseID.VarGlobal; } dList main ;
+prog : { currClass = ClasseID.VarGlobal; } dList fList { currClass = ClasseID.VarGlobal; } main ;
 
-ListaFunc : dFunc {tsLocal.clear();} ListaFunc
-               |                
-;      
+/* LISTA DE FUNCOES */
+fList :  declFunc fList 
+      |
+      ;
 
-dFunc : FUNCT type IDENT '('')' dList bloco
-      | FUNCT type IDENT '(' paramList ')' dList bloco 
-;
+declFunc : FUNCT type IDENT { tf.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); 
+                              currEscopo = $3;
+                            } nDeclfuncT
+                            
+         ;
 
-param : type IDENT;
-
-paramList : paramList ',' param 
-          | paramList
+nDeclfuncT : '('')' bloco
+          |  '('lstArgs')' bloco
           ;
+lstArgs : arg ',' lstArgs
+        | arg
+        ;
 
+arg : type IDENT { TS_entry nodo = tf.pesquisa(currEscopo);
+                   TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
+                   tf.insert(newArg);
+                   nodo.addArgs(newArg);
+                  }
+                ;
+
+/* LISTA DE DECLARACOES */
 dList : decl dList | ;
 
 decl : type  {currentType = (TS_entry)$1; } 
@@ -52,15 +65,10 @@ Lid : Lid  ',' id
     | id  
     ;
 
-id : IDENT   { TS_entry nodo = (currClass == ClasseID.VarLocal) ? tsLocal.pesquisa($1) : ts.pesquisa($1);
+id : IDENT   { TS_entry nodo = ts.pesquisa($1);
                             if (nodo != null) 
                               yyerror("(sem) variavel >" + $1 + "< jah declarada");
-                          else{
-                            if (currClass == ClasseID.VarLocal)
-                              tsLocal.insert(new TS_entry($1, currentType, currClass));
-                            else
-                              ts.insert(new TS_entry($1, currentType, currClass));
-                          } 
+                          else ts.insert(new TS_entry($1, currentType, currClass)); 
                        }
     
     ;
@@ -102,15 +110,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     | exp AND exp { $$ = validaTipo(AND, (TS_entry)$1, (TS_entry)$3); } 
     | NUM         { $$ = Tp_INT; }      
     | '(' exp ')' { $$ = $2; }
-    | IDENT       { 
-                    TS_entry nodo = null;
-
-                    if(currClass == ClasseID.VarLocal)
-                      nodo = tsLocal.pesquisa($1);
-
-                    if(nodo == null)
-                      nodo = ts.pesquisa($1);
-
+    | IDENT       { TS_entry nodo = ts.pesquisa($1);
                     if (nodo == null) {
                        yyerror("(sem) var <" + $1 + "> nao declarada"); 
                        $$ = Tp_ERRO;    
@@ -127,40 +127,66 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                                else 
                                   $$ = ((TS_entry)$1).getTipoBase();
                          } 
-     | IDENT '('')' {//verifica na tabela de func com 0 args
-                    TS_entry func = tf.pesquisa($1);
-
-                    if(func == null){
-                      yyerror("(sem) funct <" + $1 + "> nao declarada"); 
-                      $$ = Tp_ERRO;
+    | IDENT '('')' { 
+                      TS_entry nodo = tf.pesquisa($1);
+                      if(nodo == null){
+                        yyerror("funcao <" + $1 + "> nao declarada!");
+                        $$ = Tp_ERRO;
+                      }
+                      else{
+                        if(nodo.getArgs().size() == 0){
+                          $$ = nodo.getTipoBase();
+                        }else{
+                          yyerror("funcao <" + $1 + "> espera 0 argumentos, recebeu: <" + nodo.getArgs().size() + ">");
+                          $$ = Tp_ERRO;
+                        } 
+                      }
                     }
-                    else if(func.lstArgumentos.getLista().size() != 0){
-                      yyerror("(sem) funct <" + $1 + "> espera 0 argumentos mas recebeu " + func.lstArgumentos.getLista().size()); 
-                      $$ = Tp_ERRO;
-                    }
-                    else{
-                      $$ = (TS_entry)$1).getTipoBase();
-                    }
-
-                    
-                    }
-     | IDENT '(' LExp ')' {//verifica na tabela de func n parametros e tipos compativeis
-     
-                          if(func == null){
+     | IDENT '(' {lstParams.clear();} LExp ')' {
+                          TS_entry nodo = tf.pesquisa($1);
+                          if(nodo == null){
                             yyerror("(sem) funct <" + $1 + "> nao declarada"); 
                             $$ = Tp_ERRO;
                           }
-                          else if(func.lstArgumentos.getLista().size() != 0){
-                            yyerror("(sem) funct <" + $1 + "> espera 0 argumentos mas recebeu " + func.lstArgumentos.getLista().size()); 
+                          //compara número de argumentos com a lista de parametros
+                          else if(nodo.getArgs().size() != lstParams.size()){
+                            yyerror("funct <" + $1 + "> espera <"+ nodo.getArgs().size() +"> argumento(s), mas recebeu <" + lstParams.size() + "> argumento(s)!"); 
                             $$ = Tp_ERRO;
                           }
                           
+                          /* DUVIDA: como fazer a verificacao dos tipos
+                            usei uma lista auxiliar para armazenar os parametros, mas nada garante que dentro 
+                            dos parametros nao exista outra funcao, logo lstParametros seria esvaziada
+                          */
+                          else{
+                            //Boolean erro = False;
+                            for(int i=0; i < nodo.getArgs().size(); i++){
+                              if(nodo.getArgs().get(i).getTipo() != lstParams.get(i).getTipo()){
+                                String funcArgs = "";
+                                String funcParam = "";
+                                for(int j=0; j < nodo.getArgs().size(); j++){
+                                  TS_entry arg = nodo.getArgs().get(j);
+                                  funcArgs+= arg.getTipoStr() + " ";
+                                }
+                                for(int j=0; j < lstParams.size(); j++){
+                                  TS_entry param = lstParams.get(j); 
+                                  funcParam+= param.getTipoStr() + " ";
+                                }
+                                //erro = True;
+                                yyerror("funct <" + $1 + "> espera <" + nodo.getArgs().size() + "> parametro(s) < "+ funcArgs +">  mas recebeu <" + lstParams.size() + "> <"  + funcParam + "> !"); 
+                                $$ = Tp_ERRO;
+                                break;
+                              }
+                            }
+                          }
+                          
+                          //se tudo der certo
+                          //$$ = nodo.getTipoBase();
+                            
                           }
     ;
-
-
-LExp: LExp ',' Exp
-      | Exp
+    LExp: LExp ',' exp {lstParams.add((TS_entry)$3);}
+      | exp {lstParams.add((TS_entry)$1);}
       ;
 
 %%
@@ -169,14 +195,12 @@ LExp: LExp ',' Exp
 
   private TabSimb ts;
   private TabSimb tf;
-  private TabSimb tsLocal;
 
   public static TS_entry Tp_INT =  new TS_entry("int", null, ClasseID.TipoBase);
   public static TS_entry Tp_DOUBLE = new TS_entry("double", null,  ClasseID.TipoBase);
   public static TS_entry Tp_BOOL = new TS_entry("bool", null,  ClasseID.TipoBase);
-
   public static TS_entry Tp_ARRAY = new TS_entry("array", null,  ClasseID.TipoBase);
-
+  
   public static TS_entry Tp_ERRO = new TS_entry("_erro_", null,  ClasseID.TipoBase);
 
   public static final int ARRAY = 1500;
@@ -184,6 +208,8 @@ LExp: LExp ',' Exp
 
   private String currEscopo;
   private ClasseID currClass;
+
+  private ArrayList<TS_entry> lstParams;
 
   private TS_entry currentType;
 
@@ -210,6 +236,8 @@ LExp: LExp ',' Exp
     lexer = new Yylex(r, this);
 
     ts = new TabSimb();
+    tf = new TabSimb();
+    lstParams = new ArrayList<TS_entry>();
 
     //
     // não me parece que necessitem estar na TS
@@ -229,6 +257,8 @@ LExp: LExp ',' Exp
   }
 
   public void listarTS() { ts.listar();}
+
+  public void listarTF() { tf.listar();}
 
   public static void main(String args[]) throws IOException {
     System.out.println("\n\nVerificador semantico simples\n");

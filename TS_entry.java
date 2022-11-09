@@ -1,3 +1,4 @@
+import java.lang.invoke.MethodHandles.Lookup.ClassOption;
 import java.util.ArrayList;
 /**
  * Write a description of class Paciente here.
@@ -12,22 +13,39 @@ public class TS_entry
    private TS_entry tipo;
    private int nroElementos;
    private TS_entry tipoBase;
-   private TabSimb lstArgumentos;
 
+   /* declaracao de funcoes */
+   //para argumentos
+   private TS_entry escopo;
+   private ArrayList<TS_entry> args;
 
    // construtor para arrays
    public TS_entry(String umId, TS_entry umTipo, ClasseID umaClasse) {
       this(umId, umTipo, umaClasse, 0, null);
    }
 
+   public TS_entry(String umId, TS_entry umTipo, ClasseID umaClasse, TS_entry es) {
+      this(umId, umTipo, umaClasse, 0, null);
+      escopo = es;
+   }
+   
    public TS_entry(String umId, TS_entry umTipo, ClasseID umaClasse, int elems, TS_entry tp) {
       id = umId;
       tipo = umTipo;
       classe = umaClasse;
       nroElementos = elems;
       tipoBase = tp;
+      if(umaClasse ==  ClasseID.NomeFuncao)
+         args = new ArrayList<TS_entry>();
    }
 
+   public void addArgs(TS_entry arg){
+      args.add(arg);
+   }
+
+   public ArrayList<TS_entry> getArgs(){
+      return args;
+   }
 
    public String getId() {
        return id; 
@@ -37,8 +55,12 @@ public class TS_entry
        return tipo; 
    }
    
- public TS_entry getTipoBase() {
+   public TS_entry getTipoBase() {
        return tipoBase; 
+   }
+
+   public TS_entry getEscopo(){
+      return escopo;
    }
    
     
@@ -53,6 +75,17 @@ public class TS_entry
        aux.append("\tTipo: "); 
        aux.append(tipo2str(this.tipo)); 
        
+       aux.append("\tNro Args: "); 
+       if(classe == ClasseID.NomeFuncao){
+         aux.append(args.size());
+       }else aux.append("-");
+
+       aux.append("\tEscopo: "); 
+       if(escopo != null){
+         aux.append(escopo.getId());
+       }else aux.append("-");
+
+
       return aux.toString();
 
    }

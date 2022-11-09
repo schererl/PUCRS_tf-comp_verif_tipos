@@ -1,0 +1,25 @@
+
+int i;
+
+funct int functionA(){
+
+}
+
+funct double functionB(int argUM){
+
+}
+
+funct double functionC(double i, double j){
+
+}
+
+void main() {
+    i = 1;
+    
+    functionAGUSTINI();
+    functionC();
+    functionC(i, i);
+    functionC(i, i, i);
+}
+
+$MOSTRA_TF
