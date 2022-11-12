@@ -43,9 +43,10 @@ lstArgs : arg ',' lstArgs
         ;
 
 arg : type IDENT { TS_entry nodo = tf.pesquisa(currEscopo);
-                   TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
-                   tf.insert(newArg);
-                   nodo.addArgs(newArg);
+                  TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
+                  tf.insert(newArg);
+                  //nodo.addArgs(new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo));
+                  nodo.addArgs((TS_entry)$1);
                   }
                 ;
 
@@ -161,7 +162,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                           else{
                             //Boolean erro = False;
                             for(int i=0; i < nodo.getArgs().size(); i++){
-                              if(nodo.getArgs().get(i).getTipo() != lstParams.get(i).getTipo()){
+                              if(nodo.getArgs().get(i) != lstParams.get(i)){
                                 String funcArgs = "";
                                 String funcParam = "";
                                 for(int j=0; j < nodo.getArgs().size(); j++){
