@@ -22,7 +22,8 @@
 
 %%
 
-prog : { currClass = ClasseID.VarGlobal; } dList fList { currClass = ClasseID.VarGlobal; } main ;
+prog : { currClass = ClasseID.VarGlobal; } dList fList { currClass = ClasseID.VarGlobal;
+                                                         currEscopo = null; } main ;
 
 /* LISTA DE FUNCOES */
 fList :  declFunc fList 
@@ -31,46 +32,49 @@ fList :  declFunc fList
 
 declFunc : FUNCT type IDENT { tf.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); 
                               currEscopo = $3;
-                            } nDeclfuncT
+                            }  nDeclfuncT
                             
          ;
 
-nDeclfuncT : '('')' bloco
-          |  '('lstArgs')' bloco
+nDeclfuncT : '('')' dList bloco
+          |  '('lstArgs')' dList bloco
           ;
 lstArgs : arg ',' lstArgs
         | arg
         ;
 
-arg : type IDENT { TS_entry nodo = tf.pesquisa(currEscopo);
-                  TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
-                  tf.insert(newArg);
-                  //nodo.addArgs(new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo));
-                  nodo.addArgs((TS_entry)$1);
+arg : type IDENT {  TS_entry nodo = tf.pesquisa(currEscopo);
+                    TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
+                    tf.insert(newArg);
+                    nodo.addArgs((TS_entry)$1);
                   }
                 ;
+
+//innerBloco : '{' lstVat listacmd '}';
+//lstVat: type IDENT ';' {tf.insert(new TS_entry($2, currentType, currClass, tf.pesquisa(currEscopo)));}
 
 /* LISTA DE DECLARACOES */
 dList : decl dList | ;
 
 decl : type  {currentType = (TS_entry)$1; } 
-       TArray Lid ';' { /* TS_entry nodo = ts.pesquisa($2);
-                            if (nodo != null) 
-                              yyerror("(sem) variavel >" + $2 + "< jah declarada");
-                          else ts.insert(new TS_entry($2, (TS_entry)$1, currClass)); 
-                        */
-                       }
+       TArray Lid ';' {}
       ;
 
 Lid : Lid  ',' id 
     | id  
     ;
 
-id : IDENT   { TS_entry nodo = ts.pesquisa($1);
-                            if (nodo != null) 
-                              yyerror("(sem) variavel >" + $1 + "< jah declarada");
-                          else ts.insert(new TS_entry($1, currentType, currClass)); 
-                       }
+id : IDENT   { 
+                TS_entry nodo = ts.pesquisa($1);
+                if (nodo != null) 
+                  yyerror("(sem) variavel >" + $1 + "< jah declarada");
+                else if(currEscopo != null){ 
+                  tf.insert(new TS_entry($1, currentType, ClasseID.VarLocal, tf.pesquisa(currEscopo)));
+                }
+                else{
+                  ts.insert(new TS_entry($1, currentType, currClass));  
+                }
+            }
     
     ;
 
@@ -136,31 +140,30 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                       }
                       else{
                         if(nodo.getArgs().size() == 0){
-                          $$ = nodo.getTipoBase();
+                          $$ = nodo.getTipo();
                         }else{
                           yyerror("funcao <" + $1 + "> espera 0 argumentos, recebeu: <" + nodo.getArgs().size() + ">");
                           $$ = Tp_ERRO;
                         } 
                       }
-                    }
+                  }
      | IDENT '(' {lstParams.clear();} LExp ')' {
                           TS_entry nodo = tf.pesquisa($1);
+                          Boolean erro = false;
+                          
                           if(nodo == null){
                             yyerror("(sem) funct <" + $1 + "> nao declarada"); 
                             $$ = Tp_ERRO;
+                            erro = true;
                           }
-                          //compara número de argumentos com a lista de parametros
+                          
                           else if(nodo.getArgs().size() != lstParams.size()){
                             yyerror("funct <" + $1 + "> espera <"+ nodo.getArgs().size() +"> argumento(s), mas recebeu <" + lstParams.size() + "> argumento(s)!"); 
                             $$ = Tp_ERRO;
+                            erro = true;
                           }
                           
-                          /* DUVIDA: como fazer a verificacao dos tipos
-                            usei uma lista auxiliar para armazenar os parametros, mas nada garante que dentro 
-                            dos parametros nao exista outra funcao, logo lstParametros seria esvaziada
-                          */
                           else{
-                            //Boolean erro = False;
                             for(int i=0; i < nodo.getArgs().size(); i++){
                               if(nodo.getArgs().get(i) != lstParams.get(i)){
                                 String funcArgs = "";
@@ -176,19 +179,18 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                                 //erro = True;
                                 yyerror("funct <" + $1 + "> espera <" + nodo.getArgs().size() + "> parametro(s) < "+ funcArgs +">  mas recebeu <" + lstParams.size() + "> <"  + funcParam + "> !"); 
                                 $$ = Tp_ERRO;
+                                erro = true;
                                 break;
                               }
                             }
                           }
-                          
-                          //se tudo der certo
-                          //$$ = nodo.getTipoBase();
-                            
-                          }
+                          if(!erro)
+                            $$ = nodo.getTipo();
+                        }
     ;
     LExp: LExp ',' exp {lstParams.add((TS_entry)$3);}
       | exp {lstParams.add((TS_entry)$1);}
-      ;
+    ;
 
 %%
 
