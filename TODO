@@ -1,12 +1,11 @@
 // TODO
 
-[ ] adicionar funções:
-    * [x] adicionar funções
-    * [] instânciar variáveis de escopo
-    * [] adicionar cláusula return
-    * [] armazenar resultado da função numa variável
-[ ] verificação de erros:
+[x] adicionar funções
+[x] todo identificador deve ser declarado antes do seu uso, dentro do escopo corrente
+[ ] os tipos válidos integer, double, boolean, string e void
+[x] não é possível re-declarar um identificador dentro do mesmo escopo
+[x] verificação de argumentos:
     * [x] há repetição de identificadores de argumentos na função
     * [x] o número de argumentos na chamada de função é igual ao número de argumentos na declaração de função
-    * [ ] os tipos dos argumentos são os mesmos em ordem dos tipos dos argumentos na declaração de função
+    * [x] os tipos dos argumentos são os mesmos em ordem dos tipos dos argumentos na declaração de função
     * [x] se é possível passar como argumento uma variável de mesmo identificador que o identificador na declaração de função

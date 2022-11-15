@@ -30,8 +30,8 @@ fList :  declFunc fList
       |
       ;
 
-declFunc : FUNCT type IDENT { tf.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); 
-                              currEscopo = $3;
+declFunc : FUNCT type IDENT { ts.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); //HERE
+                              currEscopo = ts.pesquisa($3);
                             }  nDeclfuncT
                             
          ;
@@ -43,9 +43,9 @@ lstArgs : arg ',' lstArgs
         | arg
         ;
 
-arg : type IDENT {  TS_entry nodo = tf.pesquisa(currEscopo);
+arg : type IDENT {  TS_entry nodo = ts.pesquisa(currEscopo.getId());
                     TS_entry newArg = new TS_entry($2, (TS_entry)$1, ClasseID.ArgFuncao, nodo);
-                    tf.insert(newArg);
+                    ts.insert(newArg); //here
                     nodo.addArgs((TS_entry)$1);
                   }
                 ;
@@ -65,11 +65,11 @@ Lid : Lid  ',' id
     ;
 
 id : IDENT   { 
-                TS_entry nodo = ts.pesquisa($1);
+                TS_entry nodo = ts.pesquisa($1, currEscopo);
                 if (nodo != null) 
                   yyerror("(sem) variavel >" + $1 + "< jah declarada");
                 else if(currEscopo != null){ 
-                  tf.insert(new TS_entry($1, currentType, ClasseID.VarLocal, tf.pesquisa(currEscopo)));
+                  ts.insert(new TS_entry($1, currentType, ClasseID.VarLocal, currEscopo)); //here
                 }
                 else{
                   ts.insert(new TS_entry($1, currentType, currClass));  
@@ -115,11 +115,20 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     | exp AND exp { $$ = validaTipo(AND, (TS_entry)$1, (TS_entry)$3); } 
     | NUM         { $$ = Tp_INT; }      
     | '(' exp ')' { $$ = $2; }
-    | IDENT       { TS_entry nodo = ts.pesquisa($1);
+    | IDENT       { TS_entry nodo = null;
+                    //verifica se encontra o ident dentro do escopo
+                    if(currEscopo != null){
+                      nodo = ts.pesquisa($1, currEscopo);
+                    }
+                    //se nao encontra procurra no global
+                    if(nodo==null){
+                      nodo = ts.pesquisa($1, null);
+                    }
+
                     if (nodo == null) {
-                       yyerror("(sem) var <" + $1 + "> nao declarada"); 
-                       $$ = Tp_ERRO;    
-                       }           
+                      yyerror("(sem) var <" + $1 + "> nao declarada"); 
+                      $$ = Tp_ERRO;    
+                    }           
                     else
                         $$ = nodo.getTipo();
                   }                   
@@ -133,7 +142,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                                   $$ = ((TS_entry)$1).getTipoBase();
                          } 
     | IDENT '('')' { 
-                      TS_entry nodo = tf.pesquisa($1);
+                      TS_entry nodo = ts.pesquisa($1, currEscopo); //here
                       if(nodo == null){
                         yyerror("funcao <" + $1 + "> nao declarada!");
                         $$ = Tp_ERRO;
@@ -148,7 +157,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                       }
                   }
      | IDENT '(' {lstParams.clear();} LExp ')' {
-                          TS_entry nodo = tf.pesquisa($1);
+                          TS_entry nodo = ts.pesquisa($1);
                           Boolean erro = false;
                           
                           if(nodo == null){
@@ -209,7 +218,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
   public static final int ARRAY = 1500;
   public static final int ATRIB = 1600;
 
-  private String currEscopo;
+  private TS_entry currEscopo;
   private ClasseID currClass;
 
   private ArrayList<TS_entry> lstParams;

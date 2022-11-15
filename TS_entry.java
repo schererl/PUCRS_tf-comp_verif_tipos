@@ -75,11 +75,12 @@ public class TS_entry
        aux.append("\tTipo: "); 
        aux.append(tipo2str(this.tipo)); 
        
+       /* 
        aux.append("\tNro Args: "); 
        if(classe == ClasseID.NomeFuncao){
          aux.append(args.size());
        }else aux.append("-");
-
+      */
        aux.append("\tEscopo: "); 
        if(escopo != null){
          aux.append(escopo.getId());

@@ -1,25 +1,27 @@
 
 int i;
 
-funct int functionA(){
-
+funct int functionA(int arg) 
+bool e;
+{
+   i = 3;
+   f = 5;
 }
 
-funct double functionB(int argUM){
-
+funct int functionB(int arg) 
+bool i;
+{
+    e = 3;
+    i = 3;
 }
 
-funct double functionC(double i, double j){
+funct int functionC(double arg) 
+{
 
 }
 
 void main() {
-    i = 1;
-    
-    functionAGUSTINI();
-    functionC();
-    functionC(i, i);
-    functionC(i, i, i);
+    functionA(i);
+    functionB(i);
+    functionC(i);
 }
-
-$MOSTRA_TF

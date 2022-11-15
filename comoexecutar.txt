@@ -2,3 +2,5 @@ java -jar JFlex.jar .\exemploSem.flex
  ./yacc.exe -tv -J .\exemploSem.y
   javac .\Parser.java
    java Parser .\testes\corretoArray.txt
+
+   .\yacc.exe -tv -J .\exemploSem.y; javac .\Parser.java; java Parser .\testes\simpleFUNCT.txt
