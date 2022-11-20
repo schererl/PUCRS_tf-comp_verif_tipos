@@ -1,0 +1,18 @@
+
+funct int funcao1() 
+int i;
+{
+   
+}
+
+funct int funcao2()
+int j;
+{
+    j = i;
+} 
+
+
+void main() {
+    funcao1();
+    funcao2();
+}

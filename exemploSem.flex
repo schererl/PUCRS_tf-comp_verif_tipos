@@ -49,6 +49,7 @@ NL  = \n|\r|\r\n
          return Parser.NUM; }
 
 funct  { return Parser.FUNCT; }
+return  { return Parser.RETURN; }
 int    { return Parser.INT;     }
 double  { return Parser.DOUBLE;   }
 bool   { return Parser.BOOL; }

@@ -1,0 +1,14 @@
+
+int i;
+
+funct int soma() 
+{
+   i = i + 1; 
+   i = i + j;
+}
+
+
+void main() {
+    i = 10;
+    soma();
+}

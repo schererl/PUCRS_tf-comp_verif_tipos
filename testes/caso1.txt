@@ -1,0 +1,12 @@
+
+int i;
+
+funct int simpleTest(int arg) 
+{
+   i = 3;
+}
+
+
+void main() {
+    i = cimpleTest(i);
+}

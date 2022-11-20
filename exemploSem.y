@@ -5,11 +5,11 @@
 %}
 
 
-%token IDENT, INT, DOUBLE, BOOL, NUM, STRING
-%token LITERAL, AND, VOID, MAIN, IF, FUNCT
+%token IDENT, INT, DOUBLE, VOID, BOOL, NUM, STRING
+%token LITERAL, AND, MAIN, IF, FUNCT, RETURN
 %token STRUCT
 
-%right '='
+%right '=', RETURN
 %nonassoc '>'
 %left '+'
 %left AND
@@ -49,9 +49,9 @@ arg : type IDENT {  TS_entry nodo = ts.pesquisa(currEscopo.getId());
                     nodo.addArgs((TS_entry)$1);
                   }
                 ;
-
-//innerBloco : '{' lstVat listacmd '}';
-//lstVat: type IDENT ';' {tf.insert(new TS_entry($2, currentType, currClass, tf.pesquisa(currEscopo)));}
+//typef: type | 
+//     | VOID   { $$ = Tp_BOOL; }
+//    ;
 
 /* LISTA DE DECLARACOES */
 dList : decl dList | ;
@@ -90,7 +90,7 @@ TArray : '[' NUM ']'  { currentType = new TS_entry("?", Tp_ARRAY,
               // 
 type : INT    { $$ = Tp_INT; }
      | DOUBLE  { $$ = Tp_DOUBLE; }
-     | BOOL   { $$ = Tp_BOOL; }   
+     | BOOL   { $$ = Tp_BOOL; }
      ;
 
 
@@ -196,6 +196,12 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
                           if(!erro)
                             $$ = nodo.getTipo();
                         }
+      | RETURN exp {
+                      if($2 != currEscopo.getTipo()){
+                        yyerror("Erro funcao <" + currEscopo.getId() +"> tipo retornado <" + ((TS_entry)$2).getTipoStr() +"> eh diferente do especificado na declaracao <"+currEscopo.getTipo().getId()+">");
+                        $$ = Tp_ERRO;
+                      }
+                  }
     ;
     LExp: LExp ',' exp {lstParams.add((TS_entry)$3);}
       | exp {lstParams.add((TS_entry)$1);}
@@ -211,6 +217,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
   public static TS_entry Tp_INT =  new TS_entry("int", null, ClasseID.TipoBase);
   public static TS_entry Tp_DOUBLE = new TS_entry("double", null,  ClasseID.TipoBase);
   public static TS_entry Tp_BOOL = new TS_entry("bool", null,  ClasseID.TipoBase);
+  public static TS_entry Tp_VOID = new TS_entry("void", null,  ClasseID.TipoBase);
   public static TS_entry Tp_ARRAY = new TS_entry("array", null,  ClasseID.TipoBase);
   
   public static TS_entry Tp_ERRO = new TS_entry("_erro_", null,  ClasseID.TipoBase);
@@ -259,6 +266,7 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
     ts.insert(Tp_INT);
     ts.insert(Tp_DOUBLE);
     ts.insert(Tp_BOOL);
+    ts.insert(Tp_VOID);
     ts.insert(Tp_ARRAY);
     
 

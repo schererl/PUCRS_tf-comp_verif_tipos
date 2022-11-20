@@ -1,0 +1,14 @@
+bool result;
+int j;
+funct bool funcao(int i) 
+{
+    return i + 2;
+}
+
+
+void main() {
+    j=10;
+    result = funcao(j);
+    j = funcao(j);
+    
+}

@@ -1,0 +1,15 @@
+
+bool i;
+int j;
+
+funct int atribuiTres(int arg, int arg2) 
+int j;
+{
+   j = 3;
+}
+
+
+void main() {
+    j = 3;
+    atribuiTres(i, j);
+}

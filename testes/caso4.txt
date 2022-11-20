@@ -1,0 +1,13 @@
+
+int i;
+
+funct int somaInteiros(int i, int j) 
+{
+   i = i + j;
+}
+
+
+void main() {
+    i = 10;
+    somaInteiros(i);
+}

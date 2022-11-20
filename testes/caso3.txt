@@ -1,0 +1,15 @@
+
+int i;
+bool k;
+
+funct int somaInteiros(int i, int j) 
+int k;
+{
+   k = i + j;
+}
+
+
+void main() {
+    i = 10;
+    somaInteiros(i, i+2);
+}
