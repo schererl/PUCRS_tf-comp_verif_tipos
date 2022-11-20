@@ -1,12 +1,17 @@
 
 int i;
 
-funct int simpleTest(int arg) 
+funct void simpleTest(int arg) 
 {
    i = 3;
 }
 
+funct void evenSimplerTest() 
+{
+}
+
 
 void main() {
-    i = cimpleTest(i);
+    cimpleTest(i);
+    i = evenSimplerTest();
 }

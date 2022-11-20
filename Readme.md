@@ -19,7 +19,7 @@
 
 ID | Descrição | Resultado 
 ---|:---:|---
-Caso1 | função escrita errado | erro de **função não declarada**
+Caso1 | função escrita errado e retorno void | erro de **função não declarada** e indicativo de que função void não pode ser retornada.
 Caso2 | tipo do argumento passado errado | erro de **divergência de tipo**: variável do tipo bool passada em uma função que espera inteiro.
 Caso3 | declaração de variáveis com mesmo nome em escopos diferentes | **não deve ocorrer erro** se 'k' for buscado primeiro no escopo corrente: variável 'k' é tipo bool no escopo global, porém, é inteiro dentro da função.
 Caso4 | número de argumentos passado errado | erro indicando que **função espera 2 argumentos, mas recebeu 1**.

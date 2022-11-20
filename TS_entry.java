@@ -100,6 +100,7 @@ public class TS_entry
       else if (tipo==Parser.Tp_INT)    return "int"; 
       else if (tipo==Parser.Tp_BOOL)   return "boolean"; 
       else if (tipo==Parser.Tp_DOUBLE)  return "double";
+      else if (tipo==Parser.Tp_VOID)  return "void";
       else if (tipo.getTipo() != null) return  String.format("array(%d,%s)",
                                                    tipo.nroElementos, 
                                                     tipo2str(tipo.tipoBase));

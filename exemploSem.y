@@ -18,6 +18,7 @@
 %type <sval> IDENT
 %type <ival> NUM
 %type <obj> type
+%type <obj> typef
 %type <obj> exp
 
 %%
@@ -30,11 +31,12 @@ fList :  declFunc fList
       |
       ;
 
-declFunc : FUNCT type IDENT { ts.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); //HERE
+declFunc : FUNCT typef IDENT { ts.insert(new TS_entry($3, (TS_entry)$2, ClasseID.NomeFuncao)); //HERE
                               currEscopo = ts.pesquisa($3);
                             }  nDeclfuncT
                             
          ;
+
 
 nDeclfuncT : '('')' dList bloco
           |  '('lstArgs')' dList bloco
@@ -49,9 +51,7 @@ arg : type IDENT {  TS_entry nodo = ts.pesquisa(currEscopo.getId());
                     nodo.addArgs((TS_entry)$1);
                   }
                 ;
-//typef: type | 
-//     | VOID   { $$ = Tp_BOOL; }
-//    ;
+typef: type | VOID   { $$ = Tp_VOID; } ;
 
 /* LISTA DE DECLARACOES */
 dList : decl dList | ;
@@ -306,7 +306,11 @@ exp : exp '+' exp { $$ = validaTipo('+', (TS_entry)$1, (TS_entry)$3); }
 
 
    TS_entry validaTipo(int operador, TS_entry A, TS_entry B) {
-       
+      if(A == Tp_VOID || B == Tp_VOID){
+        yyerror("Tipo void nao pode ser usado dentro de uma expressao");
+        return Tp_ERRO;
+      } 
+
          switch ( operador ) {
               case ATRIB:
                     if ( (A == Tp_INT && B == Tp_INT)                        ||
