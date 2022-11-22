@@ -1,5 +1,13 @@
 
-# Execucao
+# Integrantes
+* nome: Victor Scherer Putrich
+* matrícula: 17104197-3
+* email: victor.putrich@edu.pucrs.br
+
+# Ambiente de Teste
+* SO: Windows 11/Ubuntu 22.04
+
+# Execução
 1. gerar o léxico  (gera Yylex.java ou arquivo especificado no %class)
 > jflex <arq.flex>   OU
 > java -jar JFlex.jar <arq.flex>
