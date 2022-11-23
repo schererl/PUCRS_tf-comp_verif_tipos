@@ -1,12 +1,12 @@
 
-# Integrantes
+# Sobre
+
+## Integrantes
 * nome: Victor Scherer Putrich
 * matrícula: 17104197-3
 * email: victor.putrich@edu.pucrs.br
 
-* Link repositório github geração de código: https://github.com/schererl/PUCRS_TF-comp-gerCod
-* Link repositório github verificação semântica: https://github.com/schererl/PUCRS_tf-comp_verif_tipos
-
+## Overview
 =================
 <!--ts-->
    * [Ambiente de Teste](#Ambiente-de-Teste)
@@ -14,6 +14,10 @@
    * [Testes de Verificação](#Testes-de-Verificacao)
    * [TODO List](#TODO)
 <!--te-->
+
+## Repo 
+* Link repositório github geração de código: https://github.com/schererl/PUCRS_TF-comp-gerCod
+* Link repositório github verificação semântica: https://github.com/schererl/PUCRS_tf-comp_verif_tipos
 
 # Ambiente-de-Teste
 * SO: Windows 11/Ubuntu 22.04
