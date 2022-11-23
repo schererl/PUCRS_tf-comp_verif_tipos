@@ -4,6 +4,8 @@
 * matrícula: 17104197-3
 * email: victor.putrich@edu.pucrs.br
 
+* Link repositório github geração de código: https://github.com/schererl/PUCRS_TF-comp-gerCod
+* Link repositório github verificação semântica: https://github.com/schererl/PUCRS_tf-comp_verif_tipos
 
 =================
 <!--ts-->
