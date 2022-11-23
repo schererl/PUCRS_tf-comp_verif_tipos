@@ -4,10 +4,19 @@
 * matrícula: 17104197-3
 * email: victor.putrich@edu.pucrs.br
 
-# Ambiente de Teste
+
+=================
+<!--ts-->
+   * [Ambiente de Teste](#Ambiente-de-Teste)
+   * [Execução](#Execucao)
+   * [Testes de Verificação](#Testes-de-Verificacao)
+   * [TODO List](#TODO)
+<!--te-->
+
+# Ambiente-de-Teste
 * SO: Windows 11/Ubuntu 22.04
 
-# Execução
+# Execucao
 1. gerar o léxico  (gera Yylex.java ou arquivo especificado no %class)
 > jflex <arq.flex>   OU
 > java -jar JFlex.jar <arq.flex>
@@ -23,7 +32,7 @@
 >  java Parser    OU
 > java Parser <teste.txt>
 
-# Testes de Verificação
+# Testes-de-Verificacao
 
 ID | Descrição | Resultado 
 ---|:---:|---
@@ -34,3 +43,18 @@ Caso4 | número de argumentos passado errado | erro indicando que **função esp
 Caso5 | uso de variável não declarada | erro indicando que **variável 'l' não foi encontrada** (deve buscar no escopo interno e global)
 Caso6 | uso de um variável interna de uma função em outra | erro indicando que a **variável 'i' não foi encontrada.**
 Caso7 | função simples que retorna inteiro mas especifica retorno booleano | erro que a função declarada **esperava retorno bool e recebeu int**. Também segundo erro com outro chamada onde uma variável inteira aguarda retorno, mas da **erro na atribuição já que o retorno esperado da função é um bool**.
+
+# TODO
+<ol>
+<li> [x] adicionar funções </li>
+<li> [x] todo identificador deve ser declarado antes do seu uso, dentro do escopo corrente</li>
+<li> [x] os tipos válidos integer, double, boolean, string e void</li>
+<li> [x] não é possível re-declarar um identificador dentro do mesmo escopo</li>
+<li> [x] verificação de argumentos:</li>
+  <ol>
+    <li> [x] há repetição de identificadores de argumentos na função</li>
+    <li> [x] o número de argumentos na chamada de função é igual ao número de argumentos na declaração de função</li>
+    <li> [x] os tipos dos argumentos são os mesmos em ordem dos tipos dos argumentos na declaração de função</li>
+    <li> [x] se é possível passar como argumento uma variável de mesmo identificador que o identificador na declaração de função</li>
+  </ol>
+</ol>
